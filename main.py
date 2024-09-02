@@ -1,0 +1,79 @@
+from __future__ import annotations
+
+import io
+import os
+import shutil
+from argparse import ArgumentParser
+
+from gitignore_parser import parse_gitignore
+
+
+def _get_paths(ign_file_path: str, parent: str) -> list[str]:
+    """Get paths that match the patters given in file."""
+
+    paths: list[str] = []
+
+    matches = parse_gitignore(ign_file_path)
+
+    for path, dirs, filenames in os.walk('.'):
+        for dir_ in dirs:
+            if matches(dir_):
+                dir_path = os.path.join(path, dir_)
+                paths.append(dir_path)
+            else:
+                for filename in filenames:
+                    file_path = os.path.join(path, filename)
+                    if matches(file_path):
+                        paths.append(file_path)
+
+    paths = sorted(set(paths))
+    return paths
+
+
+def delete(paths: list[str]) -> None:
+    for path in paths:
+        if os.path.isfile(path):
+            os.remove(path)
+        else:
+            shutil.rmtree(path)
+
+
+def parse_opts() -> _Config:
+    """Parse command line options and return _Config object."""
+
+    o_parser = ArgumentParser(
+        prog="rm-ign",
+        description="Delete every file (and folder) whose name matches"
+                        " patterns defined in git ignore file."
+    )
+    add_opt = o_parser.add_argument
+
+    add_opt(
+        "-f",
+        "--file",
+        metavar="IGNORE",
+        default=".gitignore",
+        type=str,
+        help="Path to ignore patterns file relative to present working directory."
+                "Default is .gitignore."
+    )
+    add_opt(
+        "-t",
+        "--top",
+        metavar="PATH",
+        default=".",
+        type=str,
+        help="Path from where the deletion should start, recursively."
+    )
+
+    return o_parser.parse_args()
+
+
+def main():
+    options = parse_opts()
+    paths = _get_paths(options.file, options.top)
+    delete(paths)
+
+
+if __name__ == "__main__":
+    main()
