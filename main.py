@@ -1,21 +1,24 @@
 from __future__ import annotations
 
-import io
 import os
+import typing
 import shutil
 from argparse import ArgumentParser
 
 from gitignore_parser import parse_gitignore
 
+if typing.TYPE_CHECKING:
+    from argparse import Namespace
+
 
 def _get_paths(ign_file_path: str, parent: str) -> list[str]:
-    """Get paths that match the patters given in file."""
+    """Get paths that match the patters given in ignore file."""
 
     paths: list[str] = []
 
     matches = parse_gitignore(ign_file_path)
 
-    for path, dirs, filenames in os.walk('.'):
+    for path, dirs, filenames in os.walk(parent):
         for dir_ in dirs:
             if matches(dir_):
                 dir_path = os.path.join(path, dir_)
@@ -26,20 +29,24 @@ def _get_paths(ign_file_path: str, parent: str) -> list[str]:
                     if matches(file_path):
                         paths.append(file_path)
 
-    paths = sorted(set(paths))
+    paths = list(set(paths))
     return paths
 
 
 def delete(paths: list[str]) -> None:
+    """Deletes each path in given paths."""
+
     for path in paths:
         if os.path.isfile(path):
             os.remove(path)
-        else:
+        elif os.path.isdir(path):
             shutil.rmtree(path)
+        else:
+            print("Unknown file type, ignoring: {path}")
 
 
-def parse_opts() -> _Config:
-    """Parse command line options and return _Config object."""
+def parse_opts() -> Namespace:
+    """Parse command line options and return Namespace object."""
 
     o_parser = ArgumentParser(
         prog="rm-ign",
@@ -69,7 +76,7 @@ def parse_opts() -> _Config:
     return o_parser.parse_args()
 
 
-def main():
+def main() -> None:
     options = parse_opts()
     paths = _get_paths(options.file, options.top)
     delete(paths)
