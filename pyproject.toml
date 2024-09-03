@@ -11,4 +11,4 @@ dependencies = [
 
 
 [project.scripts]
-rm-ign = "main:main"
+rm-ign = "rm_ign.main:main"
