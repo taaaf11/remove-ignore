@@ -11,7 +11,7 @@ if typing.TYPE_CHECKING:
     from argparse import Namespace
 
 
-def _get_paths(ign_file_path: str, parent: str) -> list[str]:
+def get_paths(ign_file_path: str, parent: str) -> list[str]:
     """Get paths that match the patters given in ignore file."""
 
     paths: list[str] = []
@@ -33,16 +33,16 @@ def _get_paths(ign_file_path: str, parent: str) -> list[str]:
     return paths
 
 
-def delete(paths: list[str]) -> None:
+def delete_paths(paths: list[str]) -> None:
     """Deletes each path in given paths."""
 
     for path in paths:
+        if not os.path.exists(path):  # it is already deleted
+            continue
         if os.path.isfile(path):
             os.remove(path)
         elif os.path.isdir(path):
             shutil.rmtree(path)
-        else:
-            print("Unknown file type, ignoring: {path}")
 
 
 def parse_opts() -> Namespace:
@@ -78,8 +78,11 @@ def parse_opts() -> Namespace:
 
 def main() -> None:
     options = parse_opts()
-    paths = _get_paths(options.file, options.top)
-    delete(paths)
+    if not os.path.exists(options.file):
+        print("No `.gitignore` found in current directory.")
+        return
+    paths = get_paths(options.file, options.top)
+    delete_paths(paths)
 
 
 if __name__ == "__main__":
