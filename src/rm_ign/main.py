@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import functools
 import os
 import shutil
 import sys
@@ -14,11 +15,10 @@ if typing.TYPE_CHECKING:
 def get_paths(matchers: Sequence[Callable], top: str) -> Iterable[str]:
     """Returns iterable of paths that match the patters given in ignore file."""
 
-    def matches(path):
-        return match_matchers(path, matchers)
+    matches = functools.partial(match_matchers, matchers=matchers)
 
     for path, dirs, filenames in os.walk(top):
-        def joiner(fname, path=path): return os.path.join(path, fname)
+        joiner = functools.partial(os.path.join, path)
 
         for dir_ in dirs:
             dir_path = joiner(dir_)
