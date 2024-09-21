@@ -2,6 +2,8 @@
 name = "rm-ign"
 description = "Delete each path from git repository that matches patterns in ignore files."
 version = "0.0.1"
+readme = "README.md"
+license = {file = "LICENSE"}
 authors = [
   {name = "Muhammad Altaaf", email = "taafuuu@gmail.com"}
 ]
