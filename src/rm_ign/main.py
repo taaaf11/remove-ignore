@@ -9,31 +9,27 @@ from gitignore_parser import parse_gitignore
 
 if typing.TYPE_CHECKING:
     from argparse import Namespace
+    from collections.abc import Iterable
 
 
-def get_paths(ign_file_path: str, parent: str) -> list[str]:
-    """Get paths that match the patters given in ignore file."""
-
-    paths: list[str] = []
+def get_paths(ign_file_path: str, top: str) -> Iterable[str]:
+    """Returns iterable of paths that match the patters given in ignore file."""
 
     matches = parse_gitignore(ign_file_path)
+    pjoin = os.path.join
 
-    for path, dirs, filenames in os.walk(parent):
+    for path, dirs, filenames in os.walk(top):
         for dir_ in dirs:
             if matches(dir_):
-                dir_path = os.path.join(path, dir_)
-                paths.append(dir_path)
+                dir_path = pjoin(path, dir_)
+                yield dir_path
             else:
-                for filename in filenames:
-                    file_path = os.path.join(path, filename)
-                    if matches(file_path):
-                        paths.append(file_path)
-
-    paths = list(set(paths))
-    return paths
+                paths_iter = map(lambda fname: pjoin(path, fname), filenames)
+                match_iter = filter(matches, paths_iter)
+                yield from match_iter
 
 
-def delete_paths(paths: list[str]) -> None:
+def delete_paths(paths: Iterable[str]) -> None:
     """Deletes each path in given paths."""
 
     for path in paths:
@@ -51,7 +47,7 @@ def parse_opts() -> Namespace:
     o_parser = ArgumentParser(
         prog="rm-ign",
         description="Delete every file (and folder) whose name matches"
-                        " patterns defined in git ignore file."
+        " patterns defined in git ignore file.",
     )
     add_opt = o_parser.add_argument
 
@@ -61,8 +57,7 @@ def parse_opts() -> Namespace:
         metavar="IGNORE",
         default=".gitignore",
         type=str,
-        help="Path to ignore patterns file relative to present working directory."
-                "Default is .gitignore."
+        help="Path to ignore patterns file. Defaults to $(pwd)/.gitignore.",
     )
     add_opt(
         "-t",
@@ -71,6 +66,7 @@ def parse_opts() -> Namespace:
         default=".",
         type=str,
         help="Path from where the deletion should start, recursively."
+        "Defaults to current directory.",
     )
 
     return o_parser.parse_args()
