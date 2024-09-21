@@ -7,7 +7,7 @@ from gitignore_parser import parse_gitignore
 
 if typing.TYPE_CHECKING:
     from argparse import Namespace
-    from collections.abc import Callable, Iterable
+    from collections.abc import Callable, Sequence
 
 
 def parse_opts() -> Namespace:
@@ -43,10 +43,20 @@ def parse_opts() -> Namespace:
 
 
 def make_matchers(full_paths: Sequence[str]) -> Sequence[Callable]:
+    """Accepts a sequence of paths to git-ignore-patterns files,
+    and returns a list of matcher functions based on patterns
+    in the files.
+    """
+
     return list(map(parse_gitignore, full_paths))
 
 
 def match_matchers(path: str, matchers: Sequence[Callable]) -> bool:
+    """Helper function to match a path against a sequence of
+    matcher functions, returns True if path matches any of
+    the matcher function.
+    """
+
     for matcher in matchers:
         if matcher(path):
             return True

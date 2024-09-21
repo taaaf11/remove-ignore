@@ -5,18 +5,17 @@ import shutil
 import sys
 import typing
 
-from gitignore_parser import parse_gitignore
-
 from .utils import make_matchers, match_matchers, parse_opts
 
 if typing.TYPE_CHECKING:
-    from collections.abc import Callable, Sequence
+    from collections.abc import Callable, Iterable, Sequence
 
 
 def get_paths(matchers: Sequence[Callable], top: str) -> Iterable[str]:
     """Returns iterable of paths that match the patters given in ignore file."""
 
-    matches = lambda path: match_matchers(path, matchers)
+    def matches(path):
+        return match_matchers(path, matchers)
     joiner = os.path.join
 
     for path, dirs, filenames in os.walk(top):
