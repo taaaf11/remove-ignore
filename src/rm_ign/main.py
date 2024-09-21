@@ -16,15 +16,16 @@ def get_paths(matchers: Sequence[Callable], top: str) -> Iterable[str]:
 
     def matches(path):
         return match_matchers(path, matchers)
-    joiner = os.path.join
 
     for path, dirs, filenames in os.walk(top):
+        def joiner(fname, path=path): return os.path.join(path, fname)
+
         for dir_ in dirs:
-            dir_path = joiner(path, dir_)
+            dir_path = joiner(dir_)
             if matches(dir_path):
                 yield dir_path
             else:
-                paths_iter = map(lambda fname: joiner(path, fname), filenames)
+                paths_iter = map(joiner, filenames)
                 match_iter = filter(matches, paths_iter)
                 yield from match_iter
 
