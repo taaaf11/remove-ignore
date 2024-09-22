@@ -6,13 +6,14 @@ import shutil
 import sys
 import typing
 
+from .types_ import MatcherFunctionType
 from .utils import make_matchers, match_matchers, parse_opts
 
 if typing.TYPE_CHECKING:
-    from collections.abc import Callable, Iterable, Sequence
+    from collections.abc import Iterable, Sequence
 
 
-def get_paths(matchers: Sequence[Callable], top: str) -> Iterable[str]:
+def get_paths(matchers: Sequence[MatcherFunctionType], top: str) -> Iterable[str]:
     """Returns iterable of paths that match the patters given in ignore file."""
 
     matches = functools.partial(match_matchers, matchers=matchers)
