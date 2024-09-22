@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import typing
 from argparse import ArgumentParser
 
@@ -42,13 +43,13 @@ def parse_opts() -> Namespace:
     return o_parser.parse_args()
 
 
-def make_matchers(full_paths: Sequence[str]) -> Sequence[Callable]:
+def make_matchers(paths: Sequence[str]) -> Sequence[Callable]:
     """Accepts a sequence of paths to git-ignore-patterns files,
-    and returns a list of matcher functions based on patterns
+    and returns a sequence of matcher functions based on patterns
     in the files.
     """
 
-    return list(map(parse_gitignore, full_paths))
+    return tuple(parse_gitignore(path) for path in paths if os.path.exists(path))
 
 
 def match_matchers(path: str, matchers: Sequence[Callable]) -> bool:
