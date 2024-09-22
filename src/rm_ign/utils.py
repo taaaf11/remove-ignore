@@ -6,7 +6,7 @@ from argparse import ArgumentParser
 
 from gitignore_parser import parse_gitignore
 
-from .types_ import MatcherFunctionType
+from .types_ import MatcherFunctionType, StrOrPathLike
 
 if typing.TYPE_CHECKING:
     from argparse import Namespace
@@ -45,7 +45,7 @@ def parse_opts() -> Namespace:
     return o_parser.parse_args()
 
 
-def make_matchers(paths: Sequence[str]) -> Sequence[MatcherFunctionType]:
+def make_matchers(paths: Sequence[StrOrPathLike]) -> Sequence[MatcherFunctionType]:
     """Accepts a sequence of paths to git-ignore-patterns files,
     and returns a sequence of matcher functions based on patterns
     in the files.
