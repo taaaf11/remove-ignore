@@ -9,12 +9,12 @@ There are cli options to customize program's behaviour.
 
 - To specify custom ignore file(s), you can specify space-separated list of paths. For example, if you want to tell the program to use `.gitignore` and `ignore` files present in pwd, you can use:
 ```bash
-rm-ign -f ignore .gitignore
+remign -f ignore .gitignore
 ```
 
 - If you want to change top directory i.e. from where deletion starts, you can use:
 ```bash
-rm-ign -t /path/to/top/directory
+remign -t /path/to/top/directory
 ```
 
 

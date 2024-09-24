@@ -7,6 +7,7 @@ from argparse import ArgumentParser
 from gitignore_parser import parse_gitignore
 
 from .types_ import MatcherFunctionType, StrOrPathLike
+from .utils import PROG_DESC, PROG_NAME
 
 if typing.TYPE_CHECKING:
     from argparse import Namespace
@@ -17,9 +18,8 @@ def parse_opts() -> Namespace:
     """Parse command line options and return Namespace object."""
 
     o_parser = ArgumentParser(
-        prog="rm-ign",
-        description="Delete every file (and folder) whose name matches"
-        " patterns defined in git ignore file.",
+        prog=PROG_NAME,
+        description=PROG_DESC,
     )
     add_opt = o_parser.add_argument
 
