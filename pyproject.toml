@@ -1,7 +1,7 @@
 [project]
 name = "remign"
 description = "Delete each path from git repository that matches patterns in ignore files."
-version = "1.0.0"
+version = "2.0.0"
 readme = "README.md"
 license = {file = "LICENSE"}
 authors = [
