@@ -2,12 +2,13 @@ from __future__ import annotations
 
 import os
 import typing
-from argparse import ArgumentParser
+from argparse import ArgumentParser, RawDescriptionHelpFormatter
 
 from gitignore_parser import parse_gitignore
 
+from .actions import CustomHelpAction, VerInfoAction
 from .types_ import MatcherFunctionType, StrOrPathLike
-from .utils import PROG_DESC, PROG_NAME
+from .constants import PROG_DESC, PROG_NAME
 
 if typing.TYPE_CHECKING:
     from argparse import Namespace
@@ -20,13 +21,15 @@ def parse_opts() -> Namespace:
     o_parser = ArgumentParser(
         prog=PROG_NAME,
         description=PROG_DESC,
+        add_help=False,
+        formatter_class=RawDescriptionHelpFormatter,
     )
     add_opt = o_parser.add_argument
 
     add_opt(
         "-f",
         "--files",
-        metavar="FIlES",
+        metavar="FILES",
         nargs="+",
         type=str,
         default=[".gitignore"],
@@ -40,6 +43,16 @@ def parse_opts() -> Namespace:
         type=str,
         help="Path from where the deletion should start, recursively."
         " Defaults to current directory.",
+    )
+    add_opt(
+        "-v",
+        "--version",
+        action=VerInfoAction,
+    )
+    add_opt(
+        "-h",
+        "--help",
+        action=CustomHelpAction,
     )
 
     return o_parser.parse_args()
