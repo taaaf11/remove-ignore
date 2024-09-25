@@ -32,9 +32,10 @@ class CustomHelpAction(Action):
         split = help_.split("\n")
 
         # split[0] is "options:"
-        opt_help = "\n".join(split[1:])
+        split[0] = "Options:"
+        opt_help = "\n".join(split)
 
-        usage = usage[0].upper() + usage[1:]
+        usage = f"U{usage[1:]}"
 
         return HelpComponents(description, usage, opt_help, epilog)
 
@@ -45,7 +46,6 @@ class CustomHelpAction(Action):
 
         print(h_cmpnts.usage, end="\n" * 2)
 
-        print("Options:")
         print(h_cmpnts.options_help, end="\n" * 1)
 
         if h_cmpnts.epilog:
