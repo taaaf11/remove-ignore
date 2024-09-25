@@ -59,7 +59,8 @@ class VerInfoAction(Action):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.nargs = 0
-        self.help = "Print version info."
+        self.help = "Show version info and exit."
 
     def __call__(self, parser, namespace, values, option_string):
         print(PROG_VER_INFO)
+        parser.exit()
